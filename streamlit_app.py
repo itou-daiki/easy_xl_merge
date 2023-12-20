@@ -15,7 +15,7 @@ file2 = st.file_uploader("２つ目のExcelファイルをアップロード", t
 
 if file1 and file2:
     # ファイル名取得
-    file1_name = file1.name.split('.')[0] # 拡張子を除いたファイル名
+    file1_name = file1.name.split('.')[0]  # 拡張子を除いたファイル名
     file2_name = file2.name.split('.')[0]
 
     # Excelファイルをデータフレームに読み込む
@@ -36,8 +36,12 @@ if file1 and file2:
         # キーとなるカラムをユーザーに選択させる
         key_column = st.selectbox('結合に使用するキーとなるカラムを選択してください:', common_columns)
 
+        # 結合タイプの選択
+        join_type = st.radio("結合の種類を選択してください:", ('inner', 'outer'))
+        st.caption("inner：欠損値を削除, outer:欠損値を保持")
+
         # データフレームの結合
-        merged_df = pd.merge(df1, df2, on=key_column)
+        merged_df = pd.merge(df1, df2, on=key_column, how=join_type)
 
         # 結合したデータを表示
         st.write("結合されたデータ:", merged_df)
