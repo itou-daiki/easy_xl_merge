@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import openpyxl
+from io import BytesIO
 
 st.set_page_config(page_title="easy Excel Join")
 
@@ -10,20 +11,25 @@ st.caption("Created by Dit-Lab.(Daiki Ito)")
 
 # ファイルアップロードセクション
 file1 = st.file_uploader("１つ目のExcelファイルをアップロード", type=['xlsx'])
-# Excelファイルをデータフレームに読み込む
-df1 = pd.read_excel(file1)
-# プレビュー
-st.subheader("＜１つ目のExcelファイル＞")
-st.dataframe(df1)
-
 file2 = st.file_uploader("２つ目のExcelファイルをアップロード", type=['xlsx'])
-# Excelファイルをデータフレームに読み込む
-df2 = pd.read_excel(file2)
-# プレビュー
-st.subheader("＜２つ目のExcelファイル＞")
-st.dataframe(df2)
 
 if file1 and file2:
+    # ファイル名取得
+    file1_name = file1.name.split('.')[0] # 拡張子を除いたファイル名
+    file2_name = file2.name.split('.')[0]
+
+    # Excelファイルをデータフレームに読み込む
+    df1 = pd.read_excel(file1)
+    df2 = pd.read_excel(file2)
+
+    # １つ目のファイルのプレビュー
+    st.subheader("＜１つ目のExcelファイル＞")
+    st.dataframe(df1)
+
+    # ２つ目のファイルのプレビュー
+    st.subheader("＜２つ目のExcelファイル＞")
+    st.dataframe(df2)
+
     # 共通するカラム名を取得
     common_columns = list(set(df1.columns).intersection(df2.columns))
     if common_columns:
@@ -35,6 +41,15 @@ if file1 and file2:
 
         # 結合したデータを表示
         st.write("結合されたデータ:", joined_df)
+
+        # 結合されたデータをExcelファイルとしてダウンロード
+        to_excel = BytesIO()
+        joined_df.to_excel(to_excel, index=False, engine='openpyxl')  # インデックスなしでExcelファイルに変換
+        to_excel.seek(0)  # ファイルポインタを最初に戻す
+        st.download_button(label="結合されたデータをダウンロード",
+                           data=to_excel,
+                           file_name=f"{file1_name}_{file2_name}_merged.xlsx",
+                           mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     else:
         st.warning('共通するカラムが存在しません。結合するには共通のカラムが必要です。')
 
