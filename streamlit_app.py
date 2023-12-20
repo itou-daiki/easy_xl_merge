@@ -3,9 +3,9 @@ import pandas as pd
 import openpyxl
 from io import BytesIO
 
-st.set_page_config(page_title="easy Excel Join")
+st.set_page_config(page_title="easy Excel Merge")
 
-st.title("easy Excel Join")
+st.title("easy Excel Merge")
 st.subheader("データフレーム結合Webアプリケーション")
 st.caption("Created by Dit-Lab.(Daiki Ito)")
 
@@ -37,14 +37,14 @@ if file1 and file2:
         key_column = st.selectbox('結合に使用するキーとなるカラムを選択してください:', common_columns)
 
         # データフレームの結合
-        joined_df = pd.merge(df1, df2, on=key_column)
+        merged_df = pd.merge(df1, df2, on=key_column)
 
         # 結合したデータを表示
-        st.write("結合されたデータ:", joined_df)
+        st.write("結合されたデータ:", merged_df)
 
         # 結合されたデータをExcelファイルとしてダウンロード
         to_excel = BytesIO()
-        joined_df.to_excel(to_excel, index=False, engine='openpyxl')  # インデックスなしでExcelファイルに変換
+        merged_df.to_excel(to_excel, index=False, engine='openpyxl')  # インデックスなしでExcelファイルに変換
         to_excel.seek(0)  # ファイルポインタを最初に戻す
         st.download_button(label="結合されたデータをダウンロード",
                            data=to_excel,
